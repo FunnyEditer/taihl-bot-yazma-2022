@@ -8,7 +8,7 @@ print(8+7)
 
 
 #ONDALIK SAYILARLA İŞLEM YAPALIM
- print(1.6*1.5)
+print(1.6*1.5)
 
 #VERİLERİN TİPİNE BAKALIM
 print(type(5))

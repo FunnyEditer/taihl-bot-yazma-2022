@@ -26,7 +26,6 @@ Python'da değişkenlere veri ataması yaparken kullanırız.
 a = 2
 b = 3
 c = 4
-
 #üç değişkeni tek satıra tanımlayalım
 x,y,z = 5,6,7
 print(x,y,z)
