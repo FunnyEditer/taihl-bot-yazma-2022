@@ -34,4 +34,4 @@ print("Teknoloji","İmam","Hatip","Lisesi", sep="+")
 
 #ekrana 50 tane python yazdırın
 for sayi in range(50):
-    print("python",end="-",file=open("log.txt","a"))
+    print("python", end="-", file=open("log.txt", "a"))
