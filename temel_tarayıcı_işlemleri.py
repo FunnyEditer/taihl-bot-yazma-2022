@@ -41,3 +41,4 @@ sleep(2)
 # pencereyi simge durumuna küçültelim
 tarayici.minimize_window()
 sleep(2)
+
