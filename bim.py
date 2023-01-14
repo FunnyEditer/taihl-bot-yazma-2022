@@ -9,9 +9,26 @@
         3.1.2. Ürün bilgilerini oku
         3.1.3. Ürün fiyatını oku
 """
+import os.path
+
 from moduller.tarayici import Tarayici
 from selenium.webdriver.common.by import By
 from time import sleep
+from urllib import request
+from openpyxl import Workbook
+from openpyxl import load_workbook
+import os
+
+#excel dosyası yoksa oluştur. varsa aç
+excel_yolu = "./bim.xlsx"
+if os.path.exists(excel_yolu):
+    ck = load_workbook(excel_yolu)
+    cs = ck.active
+else:
+    ck = Workbook()
+    cs = ck.active
+    cs.append(["ad","görsel","marka","açıklama","fiyat"])
+
 
 # Tarayıcıyı oluştur
 tarayici_nesne = Tarayici()
@@ -43,6 +60,13 @@ for i, tarih in enumerate(tarihler):
     tarayici.execute_script("arguments[0].click();", tarih)
     # tarih.click()  # sayfa yenileniyor
     sleep(2)
+    while True:
+        try:
+            tarayici.find_element(By.XPATH, "//div[contains(text(),'Daha Fazla Ürün Göster')]").click()
+        except:
+            break
+
+
 
     # 3.1. Ürünler içinde aşağıdaki işlemleri
     urunler = tarayici.find_elements(By.XPATH, "//div[contains(@class, 'product')]")
@@ -56,7 +80,14 @@ for i, tarih in enumerate(tarihler):
 
         try:
             # 3.1.1. Ürün resmini kaydet
-            urun.find_element(By.TAG_NAME, "img").screenshot(f"./gorseller/{ad.text}.png")
+            # urun.find_element(By.TAG_NAME, "img").screenshot(f"./gorseller/{ad.text}.png") esli versiyon
+            img = urun.find_element(By.TAG_NAME, "img")
+            img_src = img.get_attribute("src")
+            request.urlretrieve(img_src,f"gorseller/{ad.text}.png")
+            img_adi = img_src.split("/")[-1]
+            img_yolu = f".gorseller/{img_adi}"
+            request.urlretrieve(img_src, img_yolu)
+
         except:
             # görünmeyen ürünlerin ekran görüntüsü alınırken hata alırsa geç
             continue
@@ -76,8 +107,18 @@ for i, tarih in enumerate(tarihler):
         # 3.1.3 urun fiyatını oku
         fiyat = urun.find_element(By.XPATH, ".//a[@class='gButton triangle']").text
 
-        print("-"*50)
-        print("Ad:",ad.text)
-        print("Marka:",marka)
-        print("Açıklama:",aciklama)
-        print("Fiyat:",fiyat.replace("\n",""))
+        cs.append([
+            ad.text,
+            f'=HYPERLINK("{os.getcwd()}\\{img_yolu}","GÖRSEL")',
+            marka,
+            aciklama,
+            fiyat
+        ])
+
+        # print("-"*50)
+        #print("Ad:",ad.text)
+        #print("Marka:",marka)
+        #print("Açıklama:",aciklama)
+        #print("Fiyat:",fiyat.replace("\n",""))
+tarayici.quit()
+ck.save(excel_yolu)
